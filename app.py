@@ -5,25 +5,16 @@ from datetime import datetime
 # --- PAGE CONFIG ---
 st.set_page_config(page_title="ICT Trading Journal", page_icon="📈", layout="wide")
 
-# --- CUSTOM CSS ---
-st.markdown("""
-    <style>
-    .main { background-color: #f5f7f9; }
-    .stMetric { background-color: #ffffff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    </style>
-    """, unsafe_allow_html=True)
-
 # --- APP TITLE ---
 st.title("📈 ICT Master Journal")
-st.write(f"Logged in as: **Funding Pips Trader** | Date: {datetime.now().strftime('%Y-%m-%d')}")
+st.write(f"Funding Pips Trader | Date: {datetime.now().strftime('%Y-%m-%d')}")
 
 # --- SIDEBAR: ACCOUNT TRACKER ---
 with st.sidebar:
     st.header("💰 Account Health")
     initial_cap = 10000.0
-    # လက်ရှိ balance ကို ဒီမှာ update လုပ်ပါ
-    current_bal = st.number_input("Current Balance ($)", value=9732.32, step=0.01)
-    target_payout = 10200.0  # 2% Profit target
+    current_bal = st.number_input("Current Balance ($)", value=9732.30, step=0.01)
+    target_payout = 10200.0
     
     # Calculations
     drawdown_amt = initial_cap - current_bal
@@ -34,7 +25,6 @@ with st.sidebar:
     st.metric("Total Drawdown", f"-{drawdown_pct:.2f}%", f"-${drawdown_amt:.2f}", delta_color="inverse")
     st.metric("To Payout (2%)", f"${needed_for_payout:.2f}")
     
-    # Progress Bar to Payout
     progress = max(0, min(100, int((current_bal / target_payout) * 100)))
     st.write(f"Progress to Payout: {progress}%")
     st.progress(progress)
@@ -57,16 +47,18 @@ with st.form("trade_form", clear_on_submit=True):
         entry_type = st.selectbox("Entry Logic", ["Normal Entry", "Sharp Turn Entry"])
 
     with col3:
-        rr_target = st.number_input("Target RR (e.g. 2.5)", value=2.0, step=0.1)
+        rr_target = st.number_input("Target RR", value=2.10, step=0.1)
         potential_win = (current_bal * (risk_pct/100)) * rr_target
         st.info(f"Potential Profit: ${potential_win:.2f}")
 
     notes = st.text_area("Trading Narrative / Psychology")
     
-    submitted = st.form_submit_submit_button("Save Trade to Journal")
+    # ဒီမှာ ပြင်လိုက်တဲ့ Submit Button အသစ်
+    submitted = st.form_submit_button("Save Trade to Journal")
+    
     if submitted:
         if c1 and c2:
-            st.success(f"✅ Trade on {pair} saved! You followed your rules. Good job!")
+            st.success(f"✅ Trade on {pair} saved successfully!")
         else:
             st.warning("⚠️ Rules not fully met. Remember: 4H FVG + 15m MSS is your edge.")
 
@@ -75,16 +67,6 @@ st.divider()
 st.subheader("📌 Trading Rules Checklist")
 col_a, col_b = st.columns(2)
 with col_a:
-    st.info("""
-    **Before Entry:**
-    1. Identify 4H FVG (HTF Context).
-    2. Wait for price to tap the FVG.
-    3. Drop to 15m for MSS.
-    """)
+    st.info("**Before Entry:**\n1. Identify 4H FVG (HTF Context).\n2. Wait for price to tap the FVG.\n3. Drop to 15m for MSS.")
 with col_b:
-    st.warning("""
-    **Risk Management:**
-    - Max Risk: 1% (As per your plan).
-    - Goal: 10R to reach 2% Payout.
-    - Don't Revenge Trade!
-    """)
+    st.warning("**Risk Management:**\n- Max Risk: 1%.\n- Goal: 10R to reach 2% Payout.\n- Don't Revenge Trade!")
